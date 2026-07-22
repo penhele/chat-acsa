@@ -5,10 +5,12 @@ import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { ShortcutsModule } from './shortcuts/shortcuts.module';
 import { ChatModule } from './chat/chat.module';
+import { RagSyncService } from './rag/rag-sync.service';
+import { RagSyncModule } from './rag/rag-sync.module';
 
 @Module({
-  imports: [PrismaModule, ShortcutsModule, ChatModule],
+  imports: [PrismaModule, ShortcutsModule, ChatModule, RagSyncModule],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [AppService, PrismaService, RagSyncService],
 })
 export class AppModule {}
