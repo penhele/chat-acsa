@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateChatShortcutDto } from './dto/create-chat-shortcut.dto';
-import { UpdateChatShortcutDto } from './dto/update-chat-shortcut.dto';
+import { CreateChatShortcutDto } from './dto/create-shortcut.dto';
+import { UpdateChatShortcutDto } from './dto/update-shortcut.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class ChatShortcutsService {
+export class ShortcutsService {
   constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateChatShortcutDto) {

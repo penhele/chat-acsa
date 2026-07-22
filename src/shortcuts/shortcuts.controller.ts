@@ -7,13 +7,13 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ChatShortcutsService } from './chat-shortcuts.service';
-import { CreateChatShortcutDto } from './dto/create-chat-shortcut.dto';
-import { UpdateChatShortcutDto } from './dto/update-chat-shortcut.dto';
+import { ShortcutsService } from './shortcuts.service';
+import { CreateChatShortcutDto } from './dto/create-shortcut.dto';
+import { UpdateChatShortcutDto } from './dto/update-shortcut.dto';
 
 @Controller('chat-shortcuts')
-export class ChatShortcutsController {
-  constructor(private readonly chatShortcutsService: ChatShortcutsService) {}
+export class ShortcutsController {
+  constructor(private readonly chatShortcutsService: ShortcutsService) {}
 
   @Post()
   create(@Body() createChatShortcutDto: CreateChatShortcutDto) {
