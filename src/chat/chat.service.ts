@@ -3,6 +3,7 @@ import { GenerateResponseDto } from './dto/generate-response.dto';
 import { GoogleGenAI } from '@google/genai';
 import { PrismaService } from '../prisma/prisma.service';
 import { RagSyncService } from '../rag/rag-sync.service';
+import { MessagesService } from '../messages/messages.service';
 
 @Injectable()
 export class ChatService {
@@ -11,6 +12,7 @@ export class ChatService {
   constructor(
     private prisma: PrismaService,
     private ragSyncService: RagSyncService,
+    private messageService: MessagesService,
   ) {
     this.ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
@@ -43,8 +45,10 @@ export class ChatService {
       convId = newConv.id;
     }
 
-    await this.prisma.message.create({
-      data: { conversationId: convId, role: 'user', content: dto.message },
+    await this.messageService.createMessage({
+      conversationId: convId,
+      content: dto.message,
+      role: 'user',
     });
 
     // const contextChunks = await this.searchRelevantContext(dto.message, 3);
@@ -73,12 +77,10 @@ export class ChatService {
       },
     });
 
-    await this.prisma.message.create({
-      data: {
-        conversationId: convId,
-        content: response.text ?? 'Maaf, saya belum dapat memberikan jawaban.',
-        role: 'assistant',
-      },
+    await this.messageService.createMessage({
+      conversationId: convId,
+      content: response.text ?? 'Maaf, saya belum dapat memberikan jawaban.',
+      role: 'assistant',
     });
 
     return {
