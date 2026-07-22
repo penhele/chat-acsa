@@ -1,26 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { CreateChatDto } from './dto/create-chat.dto';
-import { UpdateChatDto } from './dto/update-chat.dto';
+import { GenerateResponseDto } from './dto/generate-response.dto';
+import { GoogleGenAI } from '@google/genai';
 
 @Injectable()
 export class ChatService {
-  create(createChatDto: CreateChatDto) {
-    return 'This action adds a new chat';
+  private readonly ai: GoogleGenAI;
+
+  constructor() {
+    this.ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+    });
   }
 
-  findAll() {
-    return `This action returns all chat`;
-  }
+  async generateResponse(dto: GenerateResponseDto) {
+    const interaction = await this.ai.interactions.create({
+      model: 'gemini-3.6-flash',
+      input: dto.message,
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} chat`;
-  }
-
-  update(id: number, updateChatDto: UpdateChatDto) {
-    return `This action updates a #${id} chat`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} chat`;
+    return {
+      response: interaction.output_text,
+      usage: interaction.usage,
+    };
   }
 }
