@@ -4,9 +4,11 @@ import { AppService } from './app.service';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { ChatShortcutsModule } from './chat-shortcuts/chat-shortcuts.module';
+import { ChatModule } from './chat/chat.module';
+import { ChatSessionsModule } from './chat-sessions/chat-sessions.module';
 
 @Module({
-  imports: [PrismaModule, ChatShortcutsModule],
+  imports: [PrismaModule, ChatShortcutsModule, ChatModule, ChatSessionsModule],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })
