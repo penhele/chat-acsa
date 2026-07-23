@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { GenerateResponseDto } from './dto/generate-response.dto';
 import { GoogleGenAI } from '@google/genai';
-import { PrismaService } from '../prisma/prisma.service';
-import { RagSyncService } from '../rag/rag-sync.service';
+import { Injectable } from '@nestjs/common';
 import { MessagesService } from '../messages/messages.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { RagRetrievalService } from '../rag/rag-retrieval.service';
+import { GenerateResponseDto } from './dto/generate-response.dto';
 
 @Injectable()
 export class ChatService {
@@ -11,29 +11,12 @@ export class ChatService {
 
   constructor(
     private prisma: PrismaService,
-    private ragSyncService: RagSyncService,
     private messageService: MessagesService,
+    private ragRetrieval: RagRetrievalService,
   ) {
     this.ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
     });
-  }
-
-  async searchRelevantContext(userQuery: string, limit = 3): Promise<string[]> {
-    const queryEmbedding =
-      await this.ragSyncService.generateEmbedding(userQuery);
-    const vectorString = `[${queryEmbedding.join(',')}]`;
-
-    const results: any[] = await this.prisma.$queryRawUnsafe(
-      `SELECT "content", "metadata", "embedding" <=> $1::vector AS distance
-       FROM "DocumentChunk"
-       ORDER BY distance ASC
-       LIMIT $2`,
-      vectorString,
-      limit,
-    );
-
-    return results.map((r) => r.content);
   }
 
   async handleChat(dto: GenerateResponseDto) {
@@ -51,9 +34,12 @@ export class ChatService {
       role: 'user',
     });
 
-    // const contextChunks = await this.searchRelevantContext(dto.message, 3);
-    // const contextText = contextChunks.join('\n---\n');
-    // console.log(contextText);
+    const chunks = await this.ragRetrieval.search(dto.message, 3);
+    // const context = chunks
+    //   .map((c) => c.content)
+    //   .join('\n\n-----------------\n\n');
+
+    console.log(chunks);
 
     const systemPrompt = `
         Anda adalah Asisten Virtual Customer Service resmi dari CV. Bahari Cahaya Abadi (ACSA), perusahaan spesialis jual beli & solusi HVAC (Heating, Ventilation, and Air Conditioning).

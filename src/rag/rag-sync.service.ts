@@ -1,9 +1,10 @@
 // src/rag/rag-sync.service.ts
-import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import axios from 'axios';
 import { GoogleGenAI } from '@google/genai';
+import { Injectable, Logger } from '@nestjs/common';
+import { ArticlesService } from '../articles/articles.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { ProductsService } from '../products/products.service';
+import { RagChunksService } from './rag-chunks.service';
 
 @Injectable()
 export class RagSyncService {
@@ -13,6 +14,8 @@ export class RagSyncService {
   constructor(
     private prisma: PrismaService,
     private products: ProductsService,
+    private articles: ArticlesService,
+    private ragChunks: RagChunksService,
   ) {
     this.ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
@@ -58,7 +61,7 @@ stok: ${prod.quantity}
 
       const embedding = await this.generateEmbedding(document);
 
-      await this.saveChunk({
+      await this.ragChunks.upsert({
         sourceType: 'product',
         sourceId: prod.id,
         content: document,
@@ -76,69 +79,28 @@ stok: ${prod.quantity}
   // 2. Sync Data Artikel dengan Chunking Strategy
   async syncArticles() {
     this.logger.log('Fetching articles from ACSA API...');
-    const response = await axios.get(`${process.env.ACSA_API_URL}/articles`);
-    const articles = response.data;
+
+    const articles = await this.articles.findAll();
 
     for (const article of articles) {
-      const chunks = this.chunkText(article.content, 500);
+      const document = `
+judul: ${article.name}
+kategori: ${article.category}
+deskripsi: ${article.description}
+      `;
 
-      for (let i = 0; i < chunks.length; i++) {
-        const chunkContent = `Judul Artikel: ${article.title}. ` + chunks[i];
-        const embedding = await this.generateEmbedding(chunkContent);
+      const embedding = await this.generateEmbedding(document);
 
-        await this.saveChunk({
-          sourceType: 'article',
-          sourceId: `${article.id}_chunk_${i}`,
-          content: chunkContent,
-          metadata: { title: article.title, category: article.category },
-          embedding,
-        });
-      }
+      await this.ragChunks.upsert({
+        sourceType: 'article',
+        sourceId: article.id.toString(),
+        content: document,
+        metadata: {
+          name: article.name,
+          category: article.category,
+        },
+        embedding,
+      });
     }
-  }
-
-  // Simple Character/Paragraph Chunking
-  private chunkText(text: string, chunkSize: number): string[] {
-    const paragraphs = text.split('\n\n');
-    const chunks: string[] = [];
-    let currentChunk = '';
-
-    for (const p of paragraphs) {
-      if ((currentChunk + p).length > chunkSize) {
-        if (currentChunk) chunks.push(currentChunk.trim());
-        currentChunk = p;
-      } else {
-        currentChunk += ` ${p}`;
-      }
-    }
-    if (currentChunk) chunks.push(currentChunk.trim());
-    return chunks;
-  }
-
-  // Raw SQL query untuk menyisipkan vector data ke Prisma
-  private async saveChunk(data: {
-    sourceType: string;
-    sourceId: string;
-    content: string;
-    metadata: any;
-    embedding: number[];
-  }) {
-    const vectorString = `[${data.embedding.join(',')}]`;
-
-    await this.prisma.$executeRawUnsafe(
-      `DELETE FROM "DocumentChunk" WHERE "sourceType" = $1 AND "sourceId" = $2`,
-      data.sourceType,
-      data.sourceId,
-    );
-
-    await this.prisma.$executeRawUnsafe(
-      `INSERT INTO "DocumentChunk" ("id", "sourceType", "sourceId", "content", "metadata", "embedding", "updatedAt")
-       VALUES (gen_random_uuid(), $1, $2, $3, $4::jsonb, $5::vector, NOW())`,
-      data.sourceType,
-      data.sourceId,
-      data.content,
-      JSON.stringify(data.metadata),
-      vectorString,
-    );
   }
 }
