@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { RagSyncService } from './rag-sync.service';
+import { RagEmbeddingService } from './rag-embedding.service';
 import { RagChunk } from './interfaces/rag-chunk.interface';
 
 @Injectable()
 export class RagRetrievalService {
   constructor(
     private prisma: PrismaService,
-    private ragSync: RagSyncService,
+    private embedding: RagEmbeddingService,
   ) {}
 
   async search(query: string, limit = 5): Promise<RagChunk[]> {
-    const embedding = await this.ragSync.generateEmbedding(query);
+    const embedding = await this.embedding.generateQueryEmbedding(query);
 
     const vector = `[${embedding.join(',')}]`;
 

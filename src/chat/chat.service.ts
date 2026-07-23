@@ -11,7 +11,7 @@ export class ChatService {
 
   constructor(
     private prisma: PrismaService,
-    private messageService: MessagesService,
+    private message: MessagesService,
     private ragRetrieval: RagRetrievalService,
   ) {
     this.ai = new GoogleGenAI({
@@ -28,9 +28,9 @@ export class ChatService {
       convId = newConv.id;
     }
 
-    await this.messageService.createMessage({
+    await this.message.createMessage({
       conversationId: convId,
-      content: dto.message,
+      content: `task: search result | query: ${dto.message}`,
       role: 'user',
     });
 
@@ -64,7 +64,7 @@ export class ChatService {
       },
     });
 
-    await this.messageService.createMessage({
+    await this.message.createMessage({
       conversationId: convId,
       content: response.text ?? 'Maaf, saya belum dapat memberikan jawaban.',
       role: 'assistant',

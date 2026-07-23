@@ -2,7 +2,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { Injectable, Logger } from '@nestjs/common';
 import { ArticlesService } from '../articles/articles.service';
-import { PrismaService } from '../prisma/prisma.service';
 import { ProductsService } from '../products/products.service';
 import { RagChunksService } from './rag-chunks.service';
 import { RagEmbeddingService } from './rag-embedding.service';
@@ -13,7 +12,6 @@ export class RagSyncService {
   private ai: GoogleGenAI;
 
   constructor(
-    private prisma: PrismaService,
     private products: ProductsService,
     private articles: ArticlesService,
     private ragChunks: RagChunksService,
@@ -22,22 +20,6 @@ export class RagSyncService {
     this.ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
     });
-  }
-
-  // Helper untuk generate vector embedding dari text
-  async generateEmbedding(text: string): Promise<number[]> {
-    const response = await this.ai.models.embedContent({
-      model: 'gemini-embedding-2',
-      contents: text,
-    });
-
-    const values = response.embeddings?.[0]?.values;
-
-    if (!values) {
-      throw new Error('Embedding tidak ditemukan.');
-    }
-
-    return values;
   }
 
   // 1. Sync Data Produk
