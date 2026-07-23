@@ -5,11 +5,12 @@ import { RagController } from './rag-sync.controller';
 import { RagSyncService } from './rag-sync.service';
 import { RagChunksService } from './rag-chunks.service';
 import { ArticlesModule } from '../articles/articles.module';
+import { RagEmbeddingService } from './rag-embedding.service';
 
 @Module({
   imports: [PrismaModule, ProductsModule, ArticlesModule],
-  providers: [RagSyncService, RagChunksService],
+  providers: [RagSyncService, RagChunksService, RagEmbeddingService],
   controllers: [RagController],
-  exports: [RagSyncService, RagChunksService],
+  exports: [RagSyncService, RagChunksService, RagEmbeddingService],
 })
 export class RagSyncModule {}

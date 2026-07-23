@@ -5,6 +5,7 @@ import { ArticlesService } from '../articles/articles.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProductsService } from '../products/products.service';
 import { RagChunksService } from './rag-chunks.service';
+import { RagEmbeddingService } from './rag-embedding.service';
 
 @Injectable()
 export class RagSyncService {
@@ -16,6 +17,7 @@ export class RagSyncService {
     private products: ProductsService,
     private articles: ArticlesService,
     private ragChunks: RagChunksService,
+    private embedding: RagEmbeddingService,
   ) {
     this.ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
@@ -59,7 +61,10 @@ harga: ${prod.price}
 stok: ${prod.quantity}
       `.trim();
 
-      const embedding = await this.generateEmbedding(document);
+      const embedding = await this.embedding.generateDocumentEmbedding(
+        prod.name,
+        document,
+      );
 
       await this.ragChunks.upsert({
         sourceType: 'product',
@@ -89,7 +94,10 @@ kategori: ${article.category}
 deskripsi: ${article.description}
       `;
 
-      const embedding = await this.generateEmbedding(document);
+      const embedding = await this.embedding.generateDocumentEmbedding(
+        article.name,
+        document,
+      );
 
       await this.ragChunks.upsert({
         sourceType: 'article',

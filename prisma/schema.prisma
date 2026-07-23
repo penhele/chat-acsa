@@ -6,11 +6,6 @@ datasource db {
   provider = "postgresql"
 }
 
-enum MessageRole {
-  user
-  assistant
-}
-
 model ChatShortcut {
   id        String   @id @default(uuid())
   title     String
@@ -21,43 +16,41 @@ model ChatShortcut {
 }
 
 model Conversation {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   userId        String
   title         String?
-  interactionId String?  @db.Text
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  messages Message[]
+  interactionId String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  messages      Message[]
 }
 
 model Message {
-  id             String      @id @default(uuid())
+  id             String       @id @default(uuid())
   conversationId String
   role           MessageRole
-  content        String      @db.Text
-  createdAt      DateTime    @default(now())
-
-  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  content        String
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([conversationId])
 }
 
 model RagChunk {
-  id String @id @default(uuid())
-
+  id         String                @id @default(uuid())
   sourceType String
   sourceId   String
-
-  title   String?
-  content String
-
-  metadata Json?
-
-  embedding Json
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  title      String?
+  content    String
+  metadata   Json?
+  createdAt  DateTime              @default(now())
+  updatedAt  DateTime              @updatedAt
+  embedding  Unsupported("vector")
 
   @@unique([sourceType, sourceId])
+}
+
+enum MessageRole {
+  user
+  assistant
 }

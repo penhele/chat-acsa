@@ -35,9 +35,10 @@ export class ChatService {
     });
 
     const chunks = await this.ragRetrieval.search(dto.message, 3);
-    // const context = chunks
-    //   .map((c) => c.content)
-    //   .join('\n\n-----------------\n\n');
+
+    const context = chunks
+      .map((c) => c.content)
+      .join('\n\n-----------------\n\n');
 
     console.log(chunks);
 
@@ -48,7 +49,7 @@ export class ChatService {
         Gunakan KONTEKS DATA berikut untuk menjawab pertanyaan pengguna. Jangan memberikan informasi di luar konteks ini jika berkaitan dengan stok, harga, atau spesifikasi produk ACSA:
 
         KONTEKS DATA ACSA:
-       
+       ${context}
 
         Aturan Pertanyaan/Jawaban:
         1. Jika informasi tidak ada di konteks, jawab dengan jujur bahwa Anda belum memiliki data tersebut dan sarankan menghubungi tim sales ACSA.
