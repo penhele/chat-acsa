@@ -9,6 +9,10 @@ import { RagSyncService } from './rag/rag-sync.service';
 import { RagSyncModule } from './rag/rag-sync.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
+import { ProductsService } from './products/products.service';
+import { ProductsModule } from './products/products.module';
+import { ArticlesService } from './articles/articles.service';
+import { ArticlesModule } from './articles/articles.module';
 
 @Module({
   imports: [
@@ -18,8 +22,16 @@ import { MessagesModule } from './messages/messages.module';
     RagSyncModule,
     ConversationsModule,
     MessagesModule,
+    ProductsModule,
+    ArticlesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService, RagSyncService],
+  providers: [
+    AppService,
+    PrismaService,
+    RagSyncService,
+    ProductsService,
+    ArticlesService,
+  ],
 })
 export class AppModule {}

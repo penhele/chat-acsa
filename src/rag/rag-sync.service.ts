@@ -3,13 +3,17 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import axios from 'axios';
 import { GoogleGenAI } from '@google/genai';
+import { ProductsService } from '../products/products.service';
 
 @Injectable()
 export class RagSyncService {
   private readonly logger = new Logger(RagSyncService.name);
   private ai: GoogleGenAI;
 
-  constructor(private prisma: PrismaService) {
+  constructor(
+    private prisma: PrismaService,
+    private products: ProductsService,
+  ) {
     this.ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
     });
@@ -18,7 +22,7 @@ export class RagSyncService {
   // Helper untuk generate vector embedding dari text
   async generateEmbedding(text: string): Promise<number[]> {
     const response = await this.ai.models.embedContent({
-      model: 'gemini-3.6-flash',
+      model: 'gemini-embedding-2',
       contents: text,
     });
 
@@ -33,26 +37,36 @@ export class RagSyncService {
 
   // 1. Sync Data Produk
   async syncProducts() {
-    this.logger.log('Fetching products from ACSA API...');
-    const response = await axios.get(`${process.env.ACSA_API_URL}/products`);
-    const products = response.data;
+    this.logger.log('Syncing products...');
+
+    const products = await this.products.findAll();
 
     for (const prod of products) {
-      const content =
-        `Produk: ${prod.name}. Kategori: ${prod.category}. Merk: ${prod.brand}. ` +
-        `Spesifikasi: Kapasitas ${prod.capacity} PK, Daya ${prod.wattage} Watt. ` +
-        `Deskripsi: ${prod.description}. Harga: Rp${prod.price}. Stok: ${prod.stock > 0 ? 'Tersedia' : 'Habis'}.`;
+      const document = `
+nama: ${prod.name}
+deskripsi: ${prod.description ?? '-'}
+brand: ${prod.brand.name}
+kategori: ${prod.category.name}
+tipe AC: ${prod.ac_type.name}
+pk: ${prod.pk ?? '-'}
+model: ${prod.model_code ?? '-'}
+freon: ${prod.freon_type ?? '-'}
+seri: ${prod.series_name ?? '-'}
+harga: ${prod.price}
+stok: ${prod.quantity}
+      `.trim();
 
-      const embedding = await this.generateEmbedding(content);
+      const embedding = await this.generateEmbedding(document);
 
       await this.saveChunk({
         sourceType: 'product',
-        sourceId: String(prod.id),
-        content,
+        sourceId: prod.id,
+        content: document,
         metadata: {
-          name: prod.name,
+          brand: prod.brand.name,
+          category: prod.category.name,
+          acType: prod.ac_type.name,
           price: prod.price,
-          category: prod.category,
         },
         embedding,
       });

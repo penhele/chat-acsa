@@ -42,3 +42,22 @@ model Message {
 
   @@index([conversationId])
 }
+
+model RagChunk {
+  id String @id @default(uuid())
+
+  sourceType String
+  sourceId   String
+
+  title   String?
+  content String
+
+  metadata Json?
+
+  embedding Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sourceType, sourceId])
+}
