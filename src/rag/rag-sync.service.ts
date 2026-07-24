@@ -53,10 +53,15 @@ stok: ${prod.quantity}
         sourceId: prod.id,
         content: document,
         metadata: {
+          name: prod.name,
           brand: prod.brand.name,
           category: prod.category.name,
           acType: prod.ac_type.name,
           price: prod.price,
+          stock: prod.quantity,
+          seriesName: prod.series_name,
+          model: prod.model_code,
+          freon: prod.freon_type,
         },
         embedding,
       });

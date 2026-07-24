@@ -15,10 +15,7 @@ export class RagEmbeddingService {
     title: string,
     content: string,
   ): Promise<number[]> {
-    const document = `
-title: ${title || 'none'}
-text: ${content}
-    `.trim();
+    const document = `title: ${title ?? 'none'} | text: ${content}`.trim();
 
     const response = await this.ai.models.embedContent({
       model: 'gemini-embedding-2',
@@ -35,9 +32,7 @@ text: ${content}
   }
 
   async generateQueryEmbedding(query: string): Promise<number[]> {
-    const formattedQuery = `
-task: search result | query: ${query}
-`.trim();
+    const formattedQuery = `task: search result | query: ${query}`.trim();
 
     const response = await this.ai.models.embedContent({
       model: 'gemini-embedding-2',

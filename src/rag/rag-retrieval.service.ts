@@ -18,15 +18,18 @@ export class RagRetrievalService {
     return this.prisma.$queryRawUnsafe<RagChunk[]>(
       `
 SELECT
-    "content",
-    "metadata",
-    1 - ("embedding" <=> $1::vector) AS similarity
+  content,
+  metadata,
+  1 - (embedding <=> $1::vector) AS similarity
 
 FROM "RagChunk"
 
+WHERE
+  1 - (embedding <=> $1::vector) >= 0.70
+
 ORDER BY similarity DESC
 
-LIMIT $2
+LIMIT $2;
 `,
       vector,
       limit,

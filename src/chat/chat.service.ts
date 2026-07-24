@@ -30,7 +30,7 @@ export class ChatService {
 
     await this.message.createMessage({
       conversationId: convId,
-      content: `task: search result | query: ${dto.message}`,
+      content: dto.message,
       role: 'user',
     });
 
@@ -39,8 +39,6 @@ export class ChatService {
     const context = chunks
       .map((c) => c.content)
       .join('\n\n-----------------\n\n');
-
-    console.log(chunks);
 
     const systemPrompt = `
         Anda adalah Asisten Virtual Customer Service resmi dari CV. Bahari Cahaya Abadi (ACSA), perusahaan spesialis jual beli & solusi HVAC (Heating, Ventilation, and Air Conditioning).
