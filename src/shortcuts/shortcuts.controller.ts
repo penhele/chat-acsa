@@ -13,7 +13,7 @@ import { UpdateChatShortcutDto } from './dto/update-shortcut.dto';
 
 @Controller('chat-shortcuts')
 export class ShortcutsController {
-  constructor(private readonly chatShortcutsService: ShortcutsService) {}
+  constructor(private readonly chatShortcutsService: ShortcutsService) { }
 
   @Post()
   create(@Body() createChatShortcutDto: CreateChatShortcutDto) {
@@ -23,6 +23,11 @@ export class ShortcutsController {
   @Get()
   findAll() {
     return this.chatShortcutsService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.chatShortcutsService.findOne(id);
   }
 
   @Patch(':id')
