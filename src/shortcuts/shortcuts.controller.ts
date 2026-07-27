@@ -13,7 +13,7 @@ import { UpdateChatShortcutDto } from './dto/update-shortcut.dto';
 
 @Controller('chat-shortcuts')
 export class ShortcutsController {
-  constructor(private readonly chatShortcutsService: ShortcutsService) { }
+  constructor(private readonly chatShortcutsService: ShortcutsService) {}
 
   @Post()
   create(@Body() createChatShortcutDto: CreateChatShortcutDto) {

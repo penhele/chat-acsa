@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ShortcutsService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateChatShortcutDto) {
     return this.prisma.chatShortcut.create({
@@ -19,7 +19,7 @@ export class ShortcutsService {
 
   async findOne(id: string) {
     return this.prisma.chatShortcut.findUnique({
-      where: { id }
+      where: { id },
     });
   }
 
