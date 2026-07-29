@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import { Injectable } from '@nestjs/common';
 import { MessagesService } from '../messages/messages.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { RagRetrievalService } from '../rag/rag-retrieval.service';
+import { RagRetrievalService } from '../rag/services/rag-retrieval.service';
 import { GenerateResponseDto } from './dto/generate-response.dto';
 
 @Injectable()

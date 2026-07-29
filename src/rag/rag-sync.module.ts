@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { PrismaModule } from '../prisma/prisma.module';
 import { ProductsModule } from '../products/products.module';
 import { RagController } from './rag-sync.controller';
-import { RagSyncService } from './rag-sync.service';
-import { RagChunksService } from './rag-chunks.service';
+import { RagSyncService } from './services/rag-sync.service';
+import { RagChunksService } from './services/rag-chunks.service';
 import { ArticlesModule } from '../articles/articles.module';
-import { RagEmbeddingService } from './rag-embedding.service';
+import { RagEmbeddingService } from './services/rag-embedding.service';
 
 @Module({
   imports: [PrismaModule, ProductsModule, ArticlesModule],
@@ -13,4 +13,4 @@ import { RagEmbeddingService } from './rag-embedding.service';
   controllers: [RagController],
   exports: [RagSyncService, RagChunksService, RagEmbeddingService],
 })
-export class RagSyncModule {}
+export class RagSyncModule { }

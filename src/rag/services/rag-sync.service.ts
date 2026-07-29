@@ -1,8 +1,8 @@
 // src/rag/rag-sync.service.ts
 import { GoogleGenAI } from '@google/genai';
 import { Injectable, Logger } from '@nestjs/common';
-import { ArticlesService } from '../articles/articles.service';
-import { ProductsService } from '../products/products.service';
+import { ArticlesService } from '../../articles/articles.service';
+import { ProductsService } from '../../products/products.service';
 import { RagChunksService } from './rag-chunks.service';
 import { RagEmbeddingService } from './rag-embedding.service';
 

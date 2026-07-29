@@ -1,9 +1,9 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { RagSyncService } from './rag-sync.service';
+import { RagSyncService } from './services/rag-sync.service';
 
 @Controller('rag')
 export class RagController {
-  constructor(private readonly ragSyncService: RagSyncService) {}
+  constructor(private readonly ragSyncService: RagSyncService) { }
 
   @Post('sync/products')
   async syncProducts() {

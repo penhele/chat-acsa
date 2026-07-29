@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { RagEmbeddingService } from './rag-embedding.service';
-import { RagChunk } from './interfaces/rag-chunk.interface';
+import { RagChunk } from '../interfaces/rag-chunk.interface';
 
 @Injectable()
 export class RagRetrievalService {
   constructor(
     private prisma: PrismaService,
     private embedding: RagEmbeddingService,
-  ) {}
+  ) { }
 
   async search(query: string, limit = 5): Promise<RagChunk[]> {
     const embedding = await this.embedding.generateQueryEmbedding(query);

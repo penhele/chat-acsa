@@ -5,7 +5,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { ShortcutsModule } from './shortcuts/shortcuts.module';
 import { ChatModule } from './chat/chat.module';
-import { RagSyncService } from './rag/rag-sync.service';
+import { RagSyncService } from './rag/services/rag-sync.service';
 import { RagSyncModule } from './rag/rag-sync.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
@@ -34,4 +34,4 @@ import { ArticlesModule } from './articles/articles.module';
     ArticlesService,
   ],
 })
-export class AppModule {}
+export class AppModule { }
