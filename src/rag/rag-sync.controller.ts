@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { RagSyncService } from './services/rag-sync.service';
 
 @Controller('rag')
@@ -15,5 +15,10 @@ export class RagController {
   async syncArticles() {
     await this.ragSyncService.syncArticles();
     return { message: 'Article sync completed.' };
+  }
+
+  @Get('sync/last')
+  async getLastSync() {
+    return this.ragSyncService.getLastSyncTime();
   }
 }

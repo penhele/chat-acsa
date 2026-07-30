@@ -5,6 +5,7 @@ import { ArticlesService } from '../../articles/articles.service';
 import { ProductsService } from '../../products/products.service';
 import { RagChunksService } from './rag-chunks.service';
 import { RagEmbeddingService } from './rag-embedding.service';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class RagSyncService {
@@ -16,6 +17,7 @@ export class RagSyncService {
     private articles: ArticlesService,
     private ragChunks: RagChunksService,
     private embedding: RagEmbeddingService,
+    private prisma: PrismaService
   ) {
     this.ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
@@ -97,5 +99,38 @@ deskripsi: ${article.description}
         embedding,
       });
     }
+  }
+
+  async getLastSyncTime() {
+    const [product, article] = await Promise.all([
+      this.prisma.ragChunk.findFirst({
+        where: {
+          sourceType: 'product',
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+        select: {
+          updatedAt: true,
+        },
+      }),
+
+      this.prisma.ragChunk.findFirst({
+        where: {
+          sourceType: 'article',
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+        select: {
+          updatedAt: true,
+        },
+      }),
+    ]);
+
+    return {
+      products: product?.updatedAt ?? null,
+      articles: article?.updatedAt ?? null,
+    };
   }
 }
