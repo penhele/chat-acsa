@@ -6,18 +6,19 @@ import { CreateConversationDto } from './dto/create-conversation.dto';
 export class ConversationsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(dto: CreateConversationDto, userId: string) {
+  async create(dto: CreateConversationDto, userId?: string) {
     return this.prisma.conversation.create({
       data: {
         ...dto,
-        userId,
+        userId: userId || null,
       },
     });
   }
 
-  async findAll(userId: string) {
+  async findAll(userId?: string) {
+    const whereCondition = userId ? { userId } : {};
     return this.prisma.conversation.findMany({
-      where: { userId },
+      where: whereCondition,
       include: {
         messages: {
           orderBy: { createdAt: 'asc' },
@@ -30,12 +31,10 @@ export class ConversationsService {
     });
   }
 
-  async findOne(id: string, userId: string) {
+  async findOne(id: string, userId?: string) {
+    const whereCondition = userId ? { id, userId } : { id };
     const conversation = await this.prisma.conversation.findFirst({
-      where: {
-        id: id,
-        userId: userId,
-      },
+      where: whereCondition,
       include: {
         messages: {
           orderBy: { createdAt: 'asc' },
@@ -50,7 +49,7 @@ export class ConversationsService {
     return conversation;
   }
 
-  async remove(id: string, userId: string) {
+  async remove(id: string, userId?: string) {
     await this.findOne(id, userId);
 
     return this.prisma.conversation.delete({

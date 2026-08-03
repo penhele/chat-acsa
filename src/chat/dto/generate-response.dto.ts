@@ -1,15 +1,18 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class GenerateResponseDto {
   @IsString()
   message!: string;
 
+  @IsOptional()
   @IsString()
-  title!: string;
+  title?: string;
 
+  @IsOptional()
   @IsString()
-  userId!: string;
+  userId?: string;
 
+  @IsOptional()
   @IsString()
-  conversationId!: string;
+  conversationId?: string;
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { ConversationsService } from './conversations.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 
@@ -9,23 +9,23 @@ export class ConversationsController {
   @Post()
   create(
     @Body() createConversationDto: CreateConversationDto,
-    @Body() userId: string,
+    @Body('userId') userId?: string,
   ) {
     return this.conversationsService.create(createConversationDto, userId);
   }
 
   @Get()
-  findAll(@Body() userId: string) {
+  findAll(@Query('userId') userId?: string) {
     return this.conversationsService.findAll(userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Body() userId: string) {
+  findOne(@Param('id') id: string, @Query('userId') userId?: string) {
     return this.conversationsService.findOne(id, userId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Body() userId: string) {
+  remove(@Param('id') id: string, @Query('userId') userId?: string) {
     return this.conversationsService.remove(id, userId);
   }
 }
