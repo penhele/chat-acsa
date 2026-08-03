@@ -3,7 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class RagChunksService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async upsert(data: {
     sourceType: string;
@@ -11,6 +11,7 @@ export class RagChunksService {
     content: string;
     metadata: any;
     embedding: number[];
+    title: string;
   }) {
     const vector = `[${data.embedding.join(',')}]`;
 
@@ -21,6 +22,7 @@ INSERT INTO "RagChunk"
     id,
     "sourceType",
     "sourceId",
+    title,
     content,
     metadata,
     embedding,
@@ -32,13 +34,15 @@ VALUES
     $1,
     $2,
     $3,
-    $4::jsonb,
-    $5::vector,
+    $4,
+    $5::jsonb,
+    $6::vector,
     NOW()
 )
 ON CONFLICT ("sourceType","sourceId")
 DO UPDATE SET
 
+title = EXCLUDED.title,
 content = EXCLUDED.content,
 metadata = EXCLUDED.metadata,
 embedding = EXCLUDED.embedding,
@@ -46,6 +50,7 @@ embedding = EXCLUDED.embedding,
 `,
       data.sourceType,
       data.sourceId,
+      data.title,
       data.content,
       JSON.stringify(data.metadata),
       vector,

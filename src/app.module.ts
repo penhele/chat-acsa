@@ -34,4 +34,4 @@ import { ArticlesModule } from './articles/articles.module';
     ArticlesService,
   ],
 })
-export class AppModule { }
+export class AppModule {}

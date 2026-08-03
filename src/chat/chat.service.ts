@@ -36,6 +36,14 @@ export class ChatService {
 
     const chunks = await this.ragRetrieval.search(dto.message, 3);
 
+    console.table(
+      chunks.map((c, index) => ({
+        rank: index + 1,
+        title: c.title,
+        similarity: c.similarity,
+      })),
+    );
+
     const context = chunks
       .map((c) => c.content)
       .join('\n\n-----------------\n\n');

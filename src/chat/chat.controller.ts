@@ -5,7 +5,7 @@ import { RagSyncService } from '../rag/services/rag-sync.service';
 
 @Controller('chat')
 export class ChatController {
-  constructor(private readonly chatService: ChatService) { }
+  constructor(private readonly chatService: ChatService) {}
 
   @Post()
   create(@Body() GenerateResponseDto: GenerateResponseDto) {

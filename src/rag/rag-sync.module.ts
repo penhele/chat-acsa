@@ -13,4 +13,4 @@ import { RagEmbeddingService } from './services/rag-embedding.service';
   controllers: [RagController],
   exports: [RagSyncService, RagChunksService, RagEmbeddingService],
 })
-export class RagSyncModule { }
+export class RagSyncModule {}

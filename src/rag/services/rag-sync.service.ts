@@ -1,4 +1,3 @@
-// src/rag/rag-sync.service.ts
 import { GoogleGenAI } from '@google/genai';
 import { Injectable, Logger } from '@nestjs/common';
 import { ArticlesService } from '../../articles/articles.service';
@@ -17,7 +16,7 @@ export class RagSyncService {
     private articles: ArticlesService,
     private ragChunks: RagChunksService,
     private embedding: RagEmbeddingService,
-    private prisma: PrismaService
+    private prisma: PrismaService,
   ) {
     this.ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
@@ -54,6 +53,7 @@ stok: ${prod.quantity}
         sourceType: 'product',
         sourceId: prod.id,
         content: document,
+        title: prod.name,
         metadata: {
           name: prod.name,
           brand: prod.brand.name,
@@ -89,6 +89,7 @@ deskripsi: ${article.description}
       );
 
       await this.ragChunks.upsert({
+        title: article.name,
         sourceType: 'article',
         sourceId: article.id.toString(),
         content: document,

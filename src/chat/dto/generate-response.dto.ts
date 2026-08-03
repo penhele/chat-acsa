@@ -1,5 +1,4 @@
-import { MessageRole } from '@prisma/client';
-import { IsEnum, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class GenerateResponseDto {
   @IsString()

@@ -17,4 +17,4 @@ import { ChatService } from './chat.service';
     RagRetrievalService,
   ],
 })
-export class ChatModule { }
+export class ChatModule {}

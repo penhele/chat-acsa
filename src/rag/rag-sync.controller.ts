@@ -3,7 +3,7 @@ import { RagSyncService } from './services/rag-sync.service';
 
 @Controller('rag')
 export class RagController {
-  constructor(private readonly ragSyncService: RagSyncService) { }
+  constructor(private readonly ragSyncService: RagSyncService) {}
 
   @Post('sync/products')
   async syncProducts() {

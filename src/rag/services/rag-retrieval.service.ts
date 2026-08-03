@@ -1,23 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { RagRetrievalResult } from '../interfaces/rag-retrieval-result';
 import { RagEmbeddingService } from './rag-embedding.service';
-import { RagChunk } from '../interfaces/rag-chunk.interface';
 
 @Injectable()
 export class RagRetrievalService {
   constructor(
     private prisma: PrismaService,
     private embedding: RagEmbeddingService,
-  ) { }
+  ) {}
 
-  async search(query: string, limit = 5): Promise<RagChunk[]> {
+  async search(query: string, limit = 5): Promise<RagRetrievalResult[]> {
     const embedding = await this.embedding.generateQueryEmbedding(query);
 
     const vector = `[${embedding.join(',')}]`;
 
-    return this.prisma.$queryRawUnsafe<RagChunk[]>(
+    return this.prisma.$queryRawUnsafe<RagRetrievalResult[]>(
       `
 SELECT
+  title,
   content,
   metadata,
   1 - (embedding <=> $1::vector) AS similarity
